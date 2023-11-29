@@ -2,8 +2,6 @@
 
 This contract locks ERC-20 tokens and issues back locked tokens. These locked tokens are not transferrable, but they can be delegated to other users. Tokens unlock linearly. 
 
-![Line](documents/svg/line.svg)
-
 User locks tokens on `start` moment, amount of locked tokens is `bias`. In `cliff` period amount of locked tokens doesn't change, then it starts to decline linearly. 
 
 Lock balance behaves pretty much the same way, but initial `bias` is multiplied by `value k` calculated using `Lock` parameters (slope, cliff, bias etc.)
@@ -49,39 +47,21 @@ Deployed on mainnet 0x096Bd9a7a2e703670088C05035e23c7a9F428496
 - cliff plus slope,
 - only slope.
 
-For example, consider picture 1.
-
-![Locking 1](documents/svg/Pict1LockMethods.svg)
-
 When creating the `Lock`, amount of `Lock` will be calculated using a special formula, but the function describing lock
 balance will be almost the same as the function of locked tokens (it will be only multiplied by specific value) 
-
-![Locking 2](documents/svg/Pict2TokensLockLines.svg)
-
-User can withdraw unlocked amount of tokens anytime, as shown in picture 3.
-
-![Locking 3](documents/svg/Pict3Withdraw.svg)
 
 User can create unlimited number of `Locks`.
 Each Lock created has a unique *id*.
 Total lock of the user is calculated as sum of all locks delegated to him, consider picure 4.
 
-![Locking 4](documents/svg/Pict4BrokenLine.svg)
-
 #### Relock
 
 **relock** (uint id, address newDelegate, uint newAmount, uint newSlope, uint newCliff) can be used to update parameters of the `Lock`.
-Users are allowed to increase period and increase amount of tokens, example is shown in picture 5.
+Users are allowed to increase period and increase amount of tokens.
 
-![Locking 5](documents/svg/Pict5ReLockingNoTransfer.svg)
+If there is not enough tokens locked for relock, then Locking contract will transfer needed amount of tokens from user account.
 
-If there is not enough tokens locked for relock, then Locking contract will transfer needed amount of tokens from user account, as shown in picture 6.
-
-![Locking 6](documents/svg/Pict6ReLockingTransfer.svg)
-
-Relock will throw if new `Lock` "cuts the corder" of the old `Lock`. In any period of time amount of locked ERC20 tokens should not be less than in original `Lock` (picture 7).   
-
-![Locking 7](documents/svg/Pict8СutCorner.svg)
+Relock will throw if new `Lock` "cuts the corder" of the old `Lock`. In any period of time amount of locked ERC20 tokens should not be less than in original `Lock`.   
 
 #### Delegation
 
@@ -101,9 +81,7 @@ lock = (tokens * (10000000 + 80400000 * (cliffPeriod - minCliffPeriod))/(104 - m
 
 Lock value depends on the values of period cliff and period slope. The longer the lock period, the more lock
 the user will receive. Max locking period equal 2 years cliff period and 2 years slope period.
-The example linearly changes lock value, with token value = 1000, shown in the picture 8. 
-
-![Locking 8](documents/svg/Pict7GgraphicLockValue.svg)
+The example linearly changes lock value, with token value = 1000.
 
 ##### Contract events
 Locking contract emits these events:
